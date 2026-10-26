@@ -1,8 +1,10 @@
 # Fretwise
 
+[![Android CI](https://github.com/aisho-alex/fretwise/actions/workflows/android.yml/badge.svg)](https://github.com/aisho-alex/fretwise/actions/workflows/android.yml)
+
 Тренажёр нот на гитарном грифе на Flutter. Fretwise помогает связать ноту на нотном стане с её положением на грифе: выбрать один лад, найти все варианты или отметить последовательность нот.
 
-Сейчас основная платформа разработки и проверки — **Linux desktop**.
+Основные платформы разработки и проверки — **Linux desktop** и **Android**. Android-версия протестирована на эмуляторе Android 15 (API 35).
 
 ## Возможности
 
@@ -33,10 +35,12 @@
 
 ## Управление
 
-- **Мышь:** выбор позиции на грифе и кнопок интерфейса.
+- **Мышь или касание:** выбор позиции на грифе и кнопок интерфейса.
 - **Динамик слева от струны:** прослушать открытую струну.
 - **H:** показать следующий уровень подсказки.
 - **Enter:** перейти к следующему заданию после правильного ответа.
+
+На телефоне гриф прокручивается горизонтально, а экран тренировки — вертикально.
 
 ## Запуск на Linux
 
@@ -52,19 +56,43 @@ flutter run -d linux
 
 В выводе `flutter doctor -v` раздел `Linux toolchain` должен быть отмечен как готовый.
 
+## Запуск на Android
+
+Нужны Android SDK, принятые лицензии и запущенный эмулятор либо телефон с включённой отладкой по USB:
+
+```bash
+flutter doctor -v
+flutter doctor --android-licenses
+flutter devices
+flutter run
+```
+
+Собрать и установить APK:
+
+```bash
+flutter build apk --release
+adb install -r build/app/outputs/flutter-apk/app-release.apk
+```
+
+APK поддерживает ARM64, ARMv7 и x86_64. Минимальная версия — **Android 7.0 (API 24)**. Сейчас release-сборка подписывается отладочным ключом: её можно устанавливать вручную, но для публикации в Google Play нужно настроить собственную release-подпись.
+
 ## Проверка и сборка
 
 ```bash
 flutter analyze
 flutter test
 flutter build linux --release
+flutter build apk --release
 ```
 
-Release-приложение появится здесь:
+Release-приложения появятся здесь:
 
 ```text
 build/linux/x64/release/bundle/guitar_trainer
+build/app/outputs/flutter-apk/app-release.apk
 ```
+
+[GitHub Actions](https://github.com/aisho-alex/fretwise/actions/workflows/android.yml) запускает анализ, тесты и Android-сборку для каждого push в `main` и pull request. Готовый APK сохраняется на 14 дней в артефакте **`fretwise-android-apk`** на странице завершённого запуска. Сборку также можно запустить вручную через **Actions → Android CI → Run workflow**.
 
 Тесты покрывают музыкальную модель, генерацию заданий, прохождение серий, подсказки, статистику, обработку кликов по грифу и вызовы аудиоплеера.
 
@@ -96,7 +124,7 @@ test/              # unit- и widget-тесты
 
 ## Текущие ограничения
 
-- Linux — единственная платформа, на которой проект сейчас проверяется.
+- Android проверен на эмуляторе, но пока не на физическом телефоне; Windows, macOS, iOS и web не проверялись.
 - Статистика и прогресс не сохраняются между запусками.
 - Распознавания нот через микрофон пока нет.
 
